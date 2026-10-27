@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>COSC 461/561 Project 1: Eagle Delivery Report</title>
+<style>
+  @page {
+    size: letter portrait;
+    margin: 0.48in 0.55in 0.48in 0.55in;
+  }
+  * {
+    box-sizing: border-box;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  body {
+    font-family: 'Cambria', 'Georgia', 'Times New Roman', serif;
+    font-size: 9.2pt;
+    line-height: 1.32;
+    color: #111111;
+    margin: 0;
+    padding: 0;
+  }
+  .page {
+    width: 100%;
+    height: 100%;
+    page-break-after: always;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  .page:last-child {
+    page-break-after: avoid;
+  }
+  .header-block {
+    text-align: center;
+    border-bottom: 2px solid #003366;
+    padding-bottom: 4px;
+    margin-bottom: 8px;
+  }
+  .header-title {
+    font-size: 15pt;
+    font-weight: bold;
+    color: #003366;
+    margin: 0 0 2px 0;
+    letter-spacing: -0.3px;
+  }
+  .header-subtitle {
+    font-size: 10pt;
+    font-style: italic;
+    color: #333;
+    margin-bottom: 3px;
+  }
+  .header-meta {
+    font-size: 8.5pt;
+    color: #444;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+  }
+  .header-meta span {
+    margin: 0 8px;
+  }
+
+  h2 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 10.5pt;
+    color: #003366;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 2px;
+    margin: 6px 0 4px 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  h3 {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 9.2pt;
+    color: #222;
+    margin: 4px 0 2px 0;
+  }
+  p {
+    margin: 0 0 4.5px 0;
+    text-align: justify;
+  }
+  ul, ol {
+    margin: 2px 0 4px 16px;
+    padding: 0;
+  }
+  li {
+    margin-bottom: 2px;
+  }
+  .math {
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    font-style: italic;
+  }
+  .math-block {
+    text-align: center;
+    margin: 3px 0;
+    font-family: 'Cambria Math', 'Times New Roman', serif;
+    font-size: 9.2pt;
+  }
+
+  /* Two-column layout for concise text */
+  .two-col {
+    display: flex;
+    gap: 12px;
+  }
+  .col {
+    flex: 1;
+  }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 8pt;
+    margin: 4px 0 5px 0;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+  }
+  th {
+    background-color: #003366;
+    color: white;
+    font-weight: 600;
+    padding: 3.5px 4px;
+    text-align: center;
+    border: 1px solid #002244;
+  }
+  td {
+    padding: 2.8px 4px;
+    border: 1px solid #ddd;
+    text-align: center;
+  }
+  tr:nth-child(even) td {
+    background-color: #f7f9fb;
+  }
+  .text-left {
+    text-align: left;
+  }
+
+  /* Figures */
+  .fig-container {
+    text-align: center;
+    margin: 4px 0 3px 0;
+  }
+  .fig-container img {
+    max-width: 100%;
+    height: auto;
+    border: 1px solid #e0e0e0;
+    border-radius: 3px;
+  }
+  .fig-caption {
+    font-size: 7.8pt;
+    color: #555;
+    font-style: italic;
+    margin-top: 1px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .callout-box {
+    background-color: #f2f6fa;
+    border-left: 3px solid #003366;
+    padding: 4px 8px;
+    margin: 4px 0;
+    font-size: 8.5pt;
+  }
+  .page-num {
+    text-align: right;
+    font-size: 7.5pt;
+    color: #888;
+    font-family: 'Segoe UI', sans-serif;
+    margin-top: auto;
+    padding-top: 4px;
+    border-top: 1px solid #eee;
+  }
+</style>
+</head>
+<body>
+
+<!-- ==================== PAGE 1 ==================== -->
+<div class="page">
+  <div class="header-block">
+    <div class="header-title">COSC 461/561 Project 1: Eagle Delivery Report</div>
+    <div class="header-subtitle">Autonomous Campus Navigation via Classical Heuristic Search and Q-Learning</div>
+    <div class="header-meta">
+      <strong>Author:</strong> Anurag Singh Rawat <span>|</span>
+      <strong>Institution:</strong> Eastern Michigan University (EMU) <span>|</span>
+      <strong>Date:</strong> October 26, 2026
+    </div>
+  </div>
+
+  <h2>1. Introduction & Formal Problem Formulation</h2>
+  <p>
+    The <strong>Eagle Delivery</strong> project addresses autonomous robotic delivery across the Eastern Michigan University campus. The simulated robot must transport packages between designated building entrances across discrete 2D grid campus layouts with building obstacles and walkable corridors. We explore two complementary computational paradigms: <strong>classical search</strong> (BFS and informed A* with Manhattan heuristic) when map models are known, and <strong>reinforcement learning</strong> (model-free tabular Q-learning with &epsilon;-greedy exploration) when navigation policies must be learned purely from environmental trial and error.
+  </p>
+  
+  <p>We formulate the campus delivery task as a deterministic discrete state-space planning problem:</p>
+  <ul>
+    <li><strong>State Space (<span class="math">S</span>):</strong> Discrete coordinates <span class="math">s = (r, c) &in; &Zopf;<sup>2</sup></span> corresponding to traversable walkways (<code>.</code>) and building entrances (<code>S, L, H, D, P, W</code>). For an <span class="math">R &times; C</span> map, <span class="math">S &subset; {0, &hellip;, R-1} &times; {0, &hellip;, C-1} &setminus; {s &mid; \text{grid}(s) = \text{'#'}}</span>.</li>
+    <li><strong>Initial State (<span class="math">s<sub>0</sub></span>):</strong> The grid coordinate <span class="math">(r<sub>0</sub>, c<sub>0</sub>)</span> of the assigned pickup building entrance (e.g., Student Center <code>S</code> at <span class="math">(1, 1)</span>).</li>
+    <li><strong>Action Space (<span class="math">A</span>):</strong> Four discrete cardinal movements: <span class="math">A = \{\text{UP}, \text{DOWN}, \text{LEFT}, \text{RIGHT}\}</span>. Unit displacement vectors are <span class="math">&Delta;(a) &in; \{(-1, 0), (1, 0), (0, -1), (0, 1)\}</span>. Diagonal transitions are prohibited.</li>
+    <li><strong>Transition Model (<span class="math">T(s, a)</span>):</strong> Deterministic. Attempting action <span class="math">a</span> from state <span class="math">s</span> leads to <span class="math">s' = s + &Delta;(a)</span> if <span class="math">s'</span> is in-bounds and not an obstacle wall (<code>#</code>). If blocked or out-of-bounds, the robot remains in place (<span class="math">s' = s</span>).</li>
+    <li><strong>Goal Test (<span class="math">G(s)</span>):</strong> Returns true if and only if <span class="math">s = s_{\text{goal}} = (r_g, c_g)</span>, matching the designated delivery destination building entrance. Intermediate building letters along the corridor are traversable and do not trigger termination.</li>
+    <li><strong>Path Cost (<span class="math">c(s, a, s')</span>):</strong> Every attempted action incurs a uniform unit cost of <span class="math">c = 1</span>, regardless of movement success. The total path cost is the total number of actions: <span class="math">\text{Cost}(\pi) = \text{len}(\pi) - 1</span>.</li>
+    <li><strong>Optimality of BFS:</strong> Because all step costs are strictly positive and uniform (<span class="math">c = 1</span>), Breadth-First Search systematically expands nodes in order of non-decreasing path depth. When BFS dequeues the goal state from its FIFO frontier, no undiscovered path can have fewer steps. Thus, BFS guarantees cost-optimality on unit-cost grid graphs.</li>
+  </ul>
+
+  <h2>2. Heuristic Admissibility Proof for Manhattan Distance</h2>
+  <p>
+    For A* graph search, the Manhattan distance heuristic (<span class="math">L<sub>1</sub></span> norm) between current state <span class="math">s = (r_s, c_s)</span> and goal <span class="math">g = (r_g, c_g)</span> is:
+  </p>
+  <div class="math-block">
+    <span class="math">h(s) = |r_s - r_g| + |c_s - c_g|</span>
+  </div>
+
+  <div class="callout-box">
+    <strong>Definition (Admissibility):</strong> A heuristic <span class="math">h(s)</span> is admissible if it never overestimates the true minimal cost <span class="math">h<sup>*</sup>(s)</span> required to reach the goal from state <span class="math">s</span>, i.e., <span class="math">&forall; s &in; S, 0 &le; h(s) &le; h<sup>*</sup>(s)</span>.
+  </div>
+
+  <p><strong>Proof of Admissibility:</strong></p>
+  <ol>
+    <li>
+      <strong>Relaxed Problem Formulation:</strong> Consider an unobstructed relaxation of the grid map where all impassable obstacles (<code>#</code>) and map boundaries are removed, permitting unrestricted movement on the 4-connected 2D integer lattice <span class="math">&Zopf;<sup>2</sup></span>.
+    </li>
+    <li>
+      <strong>Minimal Displacement Bound:</strong> To transition from <span class="math">(r_s, c_s)</span> to <span class="math">(r_g, c_g)</span>, the agent must achieve a net vertical change of <span class="math">|r_s - r_g|</span> and a net horizontal change of <span class="math">|c_s - c_g|</span>. In any step <span class="math">t</span> using cardinal actions, coordinate displacements satisfy <span class="math">|\Delta r_t| + |\Delta c_t| &le; 1</span>. Summing over all <span class="math">k</span> steps along any valid trajectory:
+      <div class="math-block">
+        <span class="math">|r_s - r_g| = \left| \sum_{t=1}^k \Delta r_t \right| &le; \sum_{t=1}^k |\Delta r_t|, \quad
+        |c_s - c_g| = \left| \sum_{t=1}^k \Delta c_t \right| &le; \sum_{t=1}^k |\Delta c_t|</span>
+      </div>
+      Adding these inequalities:
+      <div class="math-block">
+        <span class="math">|r_s - r_g| + |c_s - c_g| &le; \sum_{t=1}^k (|\Delta r_t| + |\Delta c_t|) &le; \sum_{t=1}^k 1 = k</span>
+      </div>
+      Thus, any valid path requires at least <span class="math">k &ge; |r_s - r_g| + |c_s - c_g|</span> steps, meaning the true optimal relaxed cost is <span class="math">h<sup>*</sup><sub>relaxed</sub>(s) = h(s)</span>.
+    </li>
+    <li>
+      <strong>Obstacle Constrained Environment:</strong> In the real campus grid, obstacle walls can only block candidate routes and force longer detours; they can never provide shortcuts or allow diagonal traversal. Therefore, the true shortest path cost <span class="math">h<sup>*</sup>(s)</span> in the constrained campus graph satisfies:
+      <div class="math-block">
+        <span class="math">h<sup>*</sup>(s) &ge; h<sup>*</sup><sub>relaxed</sub>(s) = h(s)</span>
+      </div>
+    </li>
+    <li>
+      <strong>Consistency (Monotonicity):</strong> For any adjacent states <span class="math">s</span> and <span class="math">s'</span> with step cost <span class="math">c(s, a, s') = 1</span>, the triangle inequality gives <span class="math">|h(s) - h(s')| &le; |r_s - r_s'| + |c_s - c_s'| = 1 = c(s, a, s')</span>. Hence, <span class="math">h(s) &le; c(s, a, s') + h(s')</span>.
+    </li>
+  </ol>
+  <p>
+    Since <span class="math">h(goal) = 0</span> and <span class="math">h(s) &le; h<sup>*</sup>(s)</span> for all <span class="math">s</span>, the Manhattan distance heuristic is strictly admissible and consistent, guaranteeing that A* graph search finds an optimal path without re-expanding closed states. &blacksquare;
+  </p>
+
+  <div class="page-num">Page 1 of 3</div>
+</div>
+
+<!-- ==================== PAGE 2 ==================== -->
+<div class="page">
+  <h2>3. Part A: Classical Search Implementation & Empirical Comparison</h2>
+  <p>
+    We implemented BFS and A* in <code>agents.py</code>. A* maintains a priority queue of 4-tuples <code>(f, insertion_number, g, state)</code>, where <span class="math">f = g + h</span>. An insertion counter breaks <span class="math">f</span>-ties deterministically in FIFO order without comparing state coordinates. A <code>best_g</code> lookup table tracks the cheapest known cost to each state, lazily skipping stale queue entries whose stored <span class="math">g</span> exceeds <code>best_g[state]</code>. Successors are expanded in the campus order: <code>UP, DOWN, LEFT, RIGHT</code>.
+  </p>
+
+  <h3>Six Required Search Comparisons (Baseline vs. Detour Maps)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Map Environment</th>
+        <th>Delivery Task Description</th>
+        <th>BFS Route Length</th>
+        <th>A* Route Length</th>
+        <th>BFS Node Expansions</th>
+        <th>A* Node Expansions</th>
+        <th>Expansion Reduction</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-left"><strong>Baseline</strong> (<code>emu_campus.txt</code>)</td>
+        <td class="text-left">S &rarr; W (Student Center &rarr; Walton Hall)</td>
+        <td>18</td>
+        <td>18</td>
+        <td>67</td>
+        <td>22</td>
+        <td><strong>-67.2%</strong></td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Baseline</strong> (<code>emu_campus.txt</code>)</td>
+        <td class="text-left">L &rarr; D (Halle Library &rarr; Downing Hall)</td>
+        <td>22</td>
+        <td>22</td>
+        <td>79</td>
+        <td>62</td>
+        <td><strong>-21.5%</strong></td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Baseline</strong> (<code>emu_campus.txt</code>)</td>
+        <td class="text-left">H &rarr; P (Pray-Harrold &rarr; Putnam Hall)</td>
+        <td>16</td>
+        <td>16</td>
+        <td>41</td>
+        <td>16</td>
+        <td><strong>-61.0%</strong></td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Detour</strong> (<code>emu_detour.txt</code>)</td>
+        <td class="text-left">S &rarr; W (Student Center &rarr; Walton Hall)</td>
+        <td>26</td>
+        <td>26</td>
+        <td>70</td>
+        <td>51</td>
+        <td><strong>-27.1%</strong></td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Detour</strong> (<code>emu_detour.txt</code>)</td>
+        <td class="text-left">L &rarr; D (Halle Library &rarr; Downing Hall)</td>
+        <td>22</td>
+        <td>22</td>
+        <td>65</td>
+        <td>60</td>
+        <td><strong>-7.7%</strong></td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Detour</strong> (<code>emu_detour.txt</code>)</td>
+        <td class="text-left">H &rarr; P (Pray-Harrold &rarr; Putnam Hall)</td>
+        <td>16</td>
+        <td>16</td>
+        <td>41</td>
+        <td>16</td>
+        <td><strong>-61.0%</strong></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="fig-container">
+    <img src="figures/search_expansion_comparison.png" alt="Search Node Expansions Comparison" style="width: 82%;">
+    <div class="fig-caption">Figure 1: Node expansion comparison between BFS (uninformed) and A* (informed Manhattan heuristic) across all campus tasks.</div>
+  </div>
+
+  <h3>In-Depth Analysis and Discussion</h3>
+  <ol>
+    <li>
+      <strong>Route Length Equivalence:</strong> In all six test cases, BFS and A* discover routes of identical step counts (18, 22, 16, 26, 22, 16). This empirically validates our theoretical proof that both algorithms guarantee cost-optimality under uniform positive edge costs with an admissible heuristic.
+    </li>
+    <li>
+      <strong>Walkway Detour Impact:</strong> In <code>emu_detour.txt</code>, cell <span class="math">(3, 6)</span> is obstructed. For the S &rarr; W delivery task, this cell lies directly along the baseline primary artery, forcing the robot around the central building block and extending the optimal route by 8 steps (from 18 to 26). In contrast, tasks L &rarr; D and H &rarr; P remain completely unaffected in route length (22 and 16 steps respectively) because their optimal paths do not traverse coordinate <span class="math">(3, 6)</span>.
+    </li>
+    <li>
+      <strong>Search Efficiency and Heuristic Guidance:</strong> A* expands substantially fewer nodes than BFS across all tasks. Most impressively, on H &rarr; P (both baseline and detour), A* expands exactly 16 nodes—identical to the route length. Because the corridor between H and P is relatively unobstructed in the goal direction, <span class="math">h(s) = h<sup>*</sup>(s)</span> along the path, allowing A* to proceed directly to Putnam Hall with zero extraneous exploration. For S &rarr; W on the baseline map, A* reduces node expansions from 67 to 22 (a <strong>67.2% reduction</strong>).
+    </li>
+    <li>
+      <strong>Theoretical Insight: Does A* Always Expand Fewer Nodes Than BFS?</strong>
+      A* is <em>not</em> guaranteed to expand fewer nodes than BFS in every arbitrary configuration. When an environment contains deep concave obstacles ("cul-de-sacs" or U-shaped walls) whose opening faces away from the goal, an admissible heuristic draws A* deep into the dead-end trap because geometric distance decreases. A* must exhaustively expand the interior trap until <span class="math">f = g + h</span> rises sufficiently to explore the escape route. In contrast, BFS expands outward in spherical shells and may encounter the escape path before A* overcomes its heuristic trap. On realistic campus maps, however, A*'s goal-directed pruning provides massive performance gains.
+    </li>
+  </ol>
+
+  <div class="page-num">Page 2 of 3</div>
+</div>
+
+<!-- ==================== PAGE 3 ==================== -->
+<div class="page">
+  <h2>4. Part B: Model-Free Q-Learning Formulation & Baseline Evaluation</h2>
+  <p>
+    When campus maps are unavailable, the robot learns optimal policies through trial and error. The environment provides a step reward <span class="math">r = -1</span> for every attempted action and a <span class="math">+40</span> delivery bonus upon arrival (<span class="math">r = 39</span> on the terminal step). An episode terminates on arrival or after 200 actions, giving an undiscounted return of <span class="math">R = 40 - L</span> for an <span class="math">L</span>-step route.
+  </p>
+  <p>
+    We implemented tabular Q-learning with &epsilon;-greedy action selection. State-action pairs are stored in a dictionary initialized to <span class="math">0.0</span>. The off-policy Bellman update is:
+  </p>
+  <div class="math-block">
+    <span class="math">y = r \quad (\text{if terminal}), \quad y = r + \gamma \max_{a' \in A} Q(s', a') \quad (\text{otherwise})</span><br>
+    <span class="math">Q(s, a) \leftarrow Q(s, a) + \alpha [y - Q(s, a)]</span>
+  </div>
+  <p>
+    Baseline training hyperparameters: <span class="math">\alpha = 0.3</span> (learning rate), <span class="math">\gamma = 0.95</span> (discount), <span class="math">\epsilon = 0.20</span> (exploration), 2,000 episodes per seed across seeds 0, 1, 2. Evaluation freezes learning (<span class="math">\alpha = 0</span>) and tests 100 greedy episodes (<span class="math">\epsilon = 0</span>) per seed.
+  </p>
+
+  <h3>Baseline Evaluation Results (3 Tasks &times; 3 Seeds = 9 Runs)</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Task Description</th>
+        <th>Optimal Steps (<span class="math">L</span>)</th>
+        <th>Target Return (<span class="math">40 - L</span>)</th>
+        <th>Eval Success Rate</th>
+        <th>Eval Mean Return</th>
+        <th>Eval Mean Steps</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="text-left"><strong>Baseline S &rarr; W</strong> (Student &rarr; Walton)</td>
+        <td>18</td>
+        <td>22.0</td>
+        <td><strong>100%</strong> (1.0 &plusmn; 0.0)</td>
+        <td><strong>22.0</strong> &plusmn; 0.0</td>
+        <td><strong>18.0</strong> &plusmn; 0.0</td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Baseline L &rarr; D</strong> (Library &rarr; Downing)</td>
+        <td>22</td>
+        <td>18.0</td>
+        <td><strong>100%</strong> (1.0 &plusmn; 0.0)</td>
+        <td><strong>18.0</strong> &plusmn; 0.0</td>
+        <td><strong>22.0</strong> &plusmn; 0.0</td>
+      </tr>
+      <tr>
+        <td class="text-left"><strong>Baseline H &rarr; P</strong> (Harrold &rarr; Putnam)</td>
+        <td>16</td>
+        <td>24.0</td>
+        <td><strong>100%</strong> (1.0 &plusmn; 0.0)</td>
+        <td><strong>24.0</strong> &plusmn; 0.0</td>
+        <td><strong>16.0</strong> &plusmn; 0.0</td>
+      </tr>
+    </tbody>
+  </table>
+  <p>
+    <strong>Findings:</strong> All nine runs achieved 100% success rate with zero variance across seeds. The evaluated greedy policies matched the exact optimal path lengths found by BFS and A* (18, 22, 16 steps), confirming that model-free Q-learning successfully discovers the globally optimal shortest path without prior transition knowledge.
+  </p>
+
+  <h2>5. Part C: Custom Campus Design & Epsilon-Variation Study</h2>
+  <p>
+    <strong>Custom Campus Map (<code>maps/my_campus.txt</code>):</strong> A <span class="math">10 \times 15</span> grid containing all six buildings: S at <span class="math">(1,1)</span>, W at <span class="math">(1,12)</span>, L at <span class="math">(5,1)</span>, D at <span class="math">(5,13)</span>, H at <span class="math">(9,1)</span>, and P at <span class="math">(9,12)</span>. The map features an unobstructed northern corridor (optimal S&rarr;W length 11 steps), an internal cyclic loop connecting north and south campus, and deceptive dead-end branches. On S&rarr;W, BFS took 35 expansions while A* took only 11 expansions.
+  </p>
+  <p>
+    <strong>Controlled Experiment:</strong> We investigated: <em>How does varying exploration <span class="math">\epsilon \in \{0.05, 0.20, 0.50\}</span> affect online training performance vs. asymptotic policy quality?</em>
+  </p>
+
+  <div class="two-col">
+    <div class="col">
+      <table>
+        <thead>
+          <tr>
+            <th>Setting</th>
+            <th>Eval Success</th>
+            <th>Eval Return</th>
+            <th>Eval Steps</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="math">\epsilon = 0.05</span></td>
+            <td>1.0 &plusmn; 0.0</td>
+            <td>29.0 &plusmn; 0.0</td>
+            <td>11.0 &plusmn; 0.0</td>
+          </tr>
+          <tr>
+            <td><span class="math">\epsilon = 0.20</span></td>
+            <td>1.0 &plusmn; 0.0</td>
+            <td>29.0 &plusmn; 0.0</td>
+            <td>11.0 &plusmn; 0.0</td>
+          </tr>
+          <tr>
+            <td><span class="math">\epsilon = 0.50</span></td>
+            <td>1.0 &plusmn; 0.0</td>
+            <td>29.0 &plusmn; 0.0</td>
+            <td>11.0 &plusmn; 0.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="col">
+      <p style="font-size: 8pt; margin: 0;">
+        <strong>Online Training Returns (100-ep blocks):</strong><br>
+        &bull; <em>Block 1:</em> <span class="math">\epsilon=0.05</span>: -3.1 | <span class="math">\epsilon=0.20</span>: -5.1 | <span class="math">\epsilon=0.50</span>: -18.2<br>
+        &bull; <em>Block 5:</em> <span class="math">\epsilon=0.05</span>: +28.5 | <span class="math">\epsilon=0.20</span>: +26.0 | <span class="math">\epsilon=0.50</span>: +16.5<br>
+        &bull; <em>Block 20:</em> <span class="math">\epsilon=0.05</span>: +28.3 | <span class="math">\epsilon=0.20</span>: +26.3 | <span class="math">\epsilon=0.50</span>: +16.0
+      </p>
+    </div>
+  </div>
+
+  <div class="fig-container">
+    <img src="figures/q_learning_curves.png" alt="Q-Learning Training Curves" style="width: 88%;">
+    <div class="fig-caption">Figure 2: Q-learning training curves: (a) Baseline campus tasks; (b) Custom map S&rarr;W under exploration rates &epsilon; = 0.05, 0.20, 0.50.</div>
+  </div>
+
+  <p>
+    <strong>Key Insights:</strong> 
+    1) <em>Off-Policy Optimality:</em> As predicted, all three agents learn the identical globally optimal greedy policy (11 steps, 29.0 return) because Q-learning's target relies on <span class="math">\max_{a'} Q(s', a')</span> rather than the action chosen by the behavior policy. 
+    2) <em>Online Training Dithering Penalty:</em> Under <span class="math">\epsilon = 0.50</span>, taking 50% random exploratory actions causes extensive dithering during training, depressing online returns to <span class="math">\approx 16.0</span> (averaging <span class="math">\approx 24</span> steps/episode). Under <span class="math">\epsilon = 0.05</span>, the agent exploits its knowledge 95% of the time, achieving high online returns (<span class="math">\approx 28.4</span>) while still exploring enough to solve the map.
+  </p>
+
+  <h2>6. Conclusion</h2>
+  <p>
+    This project demonstrated the complementary strengths of heuristic planning and reinforcement learning. With map access, A* guided by the admissible Manhattan distance reduces search expansions by up to 67.2% while guaranteeing path optimality. In unknown environments, tabular Q-learning converges reliably across diverse initializations to the exact same optimal shortest routes. Controlled experiments confirmed that while exploration rate &epsilon; heavily dictates transient online operational efficiency, Q-learning's off-policy foundation ensures robust asymptotic convergence to optimal navigation.
+  </p>
+
+  <div class="page-num">Page 3 of 3</div>
+</div>
+
+</body>
+</html>
